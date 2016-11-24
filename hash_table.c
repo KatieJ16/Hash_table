@@ -89,9 +89,7 @@ hash_table *create_hash_table() {
 
 /* Free a hash table. */
 void free_hash_table(hash_table *ht) {
-/*    node *(slots[NSLOTS]) = *(ht->slot); 
-    node *n;
-  */  int i = 0;
+    int i = 0;
     for(i = 0; i < NSLOTS; i ++) {
         free_list(ht->slot[i]);
     }
@@ -106,10 +104,6 @@ void free_hash_table(hash_table *ht) {
 int get_value(hash_table *ht, char *key) {
     int hash_num = hash(key);
     node *list = ht->slot[hash_num];
-    /* set list to the first node of the slot array. */
-/*    node *list = *(ht->slot);
-  */  
-    printf("line 110");           
     
     /* when list is a blank list, definately no key. */
     if(list == NULL) {
@@ -117,11 +111,9 @@ int get_value(hash_table *ht, char *key) {
         return 0;
     }
 
-    printf("list->next = %s", (list->next == NULL));
 
     /* in the right linked list, find the key and return the value */
     while(list->next != NULL) {    
-        printf("repeat line 112");
         if(list->key == key) {
             free_list(list);
             return list->value;
