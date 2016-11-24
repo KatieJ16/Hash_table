@@ -25,7 +25,8 @@ int hash(char *s) {
     int sum = 0;
     int i = 0;
 
-    for(i = 0; i < sizeof s; i ++) {
+    for(i = 0; i < strlen(s); i ++) {
+        printf("s[%d] = %d", i, s[i]);
         sum = sum + s[i];
     }
 
@@ -71,7 +72,7 @@ void free_list(node *list) {
 
 /* Create a new hash table. */
 hash_table *create_hash_table() {
-    node *(slots[NSLOTS]);
+    node *(slots[NSLOTS]) = { NULL };
     hash_table *result = (hash_table *)malloc(sizeof(hash_table));
     
     if (result == NULL) {
@@ -87,13 +88,14 @@ hash_table *create_hash_table() {
 
 
 /* Free a hash table. */
-void free_hash_table(hash_table *ht){
+void free_hash_table(hash_table *ht) {
 /*    node *(slots[NSLOTS]) = *(ht->slot); 
     node *n;
   */  int i = 0;
     for(i = 0; i < NSLOTS; i ++) {
         free_list(ht->slot[i]);
     }
+    free(ht->slot);
 }
 
 
@@ -107,16 +109,27 @@ int get_value(hash_table *ht, char *key) {
     /* set list to the first node of the slot array. */
 /*    node *list = *(ht->slot);
   */  
- printf("line 110");           
+    printf("line 110");           
+    
+    /* when list is a blank list, definately no key. */
+    if(list == NULL) {
+        free_list(list);
+        return 0;
+    }
+
+    printf("list->next = %s", (list->next == NULL));
+
     /* in the right linked list, find the key and return the value */
     while(list->next != NULL) {    
         printf("repeat line 112");
         if(list->key == key) {
+            free_list(list);
             return list->value;
         }
         list = list->next;
     }
     /* only happens when the key isn't in teh hash table. */
+    free_list(list);
     return 0;
 }
 
@@ -126,7 +139,7 @@ int get_value(hash_table *ht, char *key) {
  * create a new node and set the value to 'value'.  Note that this
  * function alters the hash table that was passed to it.
  */
-void set_value(hash_table *ht, char *key, int value){
+void set_value(hash_table *ht, char *key, int value) {
     node *temp = NULL;
     int hash_num = hash(key);
     /* set list to the correct one based on the hash. */
